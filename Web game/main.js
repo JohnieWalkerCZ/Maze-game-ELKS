@@ -1,5 +1,3 @@
-//import * as webSerial from 'webSerial.js';
-
 const WALL_TYPES = ["none", "wall"];
 const WALL_TYPES_COLORS = { "none": "#00000000", "wall": "#000000ff" };
 const WALL_TYPES_PASSABLE = { "none": true, "wall": false };
@@ -39,7 +37,6 @@ let reveal_cells = false;
 
 class PlayerMaze {
     constructor(size, start, finish, lantern_range) {
-        console.log(size, start, finish);
         this.size = size;
         this.vertical_walls = [];
         this.horizontal_walls = [];
@@ -190,13 +187,6 @@ class PlayerMaze {
     }
 
     get finished() {
-        //console.log(this.finish);
-        //console.log(this.player_pos);
-        console.log(this.finish.x);
-        console.log(this.player_pos.x);
-
-        console.log(this.finish.y);
-        console.log(this.player_pos.y);
         return (this.finish.x == this.player_pos.x) && (this.finish.y == this.player_pos.y);
     }
 
@@ -268,7 +258,6 @@ class PlayerMaze {
     }
 
     move(direction) {
-        console.log('direction ' + direction);
         if (direction == "up") if (this.player_pos.y > 0) if (WALL_TYPES_PASSABLE[this.horizontal_walls[this.player_pos.x][this.player_pos.y]]) this.player_pos.y--;
         if (direction == "left") if (this.player_pos.x > 0) if (WALL_TYPES_PASSABLE[this.vertical_walls[this.player_pos.x][this.player_pos.y]]) this.player_pos.x--;
         if (direction == "down") if (this.player_pos.y < (this.size.y - 1)) if (WALL_TYPES_PASSABLE[this.horizontal_walls[this.player_pos.x][this.player_pos.y + 1]]) this.player_pos.y++;
@@ -317,8 +306,6 @@ let voteButton = document.getElementById('vote');
 let singleButton = document.getElementById('single');
 let selectionButton = document.getElementById('submit-selection');
 
-console.log(voteButton);
-
 voteButton.addEventListener('click', (e) => {
     document.getElementById('vote-game').style.display = 'block';
     voteButton.style.display = 'none';
@@ -358,21 +345,16 @@ selectionButton.addEventListener('click', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-    //console.log(e);
     if (e.key == 'w') {
-        //console.log('w pressed' || e.key == 'ArrowUp');
         myMaze.move('up');
         update_maze(myMaze);
     } else if (e.key == 'a' || e.key == 'ArrowLeft') {
-        //console.log('a pressed');
         myMaze.move('left');
         update_maze(myMaze);
     } else if (e.key == 's' || e.key == 'ArrowDown') {
-        //console.log('s pressed');
         myMaze.move('down');
         update_maze(myMaze);
     } else if (e.key == 'd' || e.key == 'ArrowRight') {
-        //console.log('d pressed');
         myMaze.move('right');
         update_maze(myMaze);
     }
@@ -426,7 +408,6 @@ function update_maze() {
     myMaze.update_table();
     if (myMaze.finished) {
         myMaze = new PlayerMaze(maze_size, START, new Vec2(maze_size.x - 1, maze_size.y - 1), LANTERN_RANGE);
-        //console.log('generated new maze');
         while (maze_display.firstChild)
             maze_display.firstChild.remove();
         maze_display.appendChild(myMaze.to_table("64px"));
@@ -453,91 +434,17 @@ button = document.getElementById('test-button');
 
 serialInit('0x303A', button, (value) => {
 
-    //console.log(value);
     let input = readStringFromSerial(value);
 
     if (input == 'up' || input == 'left' || input == 'down' || input == 'right') {
-        //console.log(input);
         myMaze.move(input);
         update_maze(myMaze);
     } else if (input != 'undefined' || input != 'null' || input != '' || input != null || input != undefined || input != "") {
         input = JSON.parse(input);
-        //console.log(input);
         labels.up.innerHTML = 'Hlasy: ' + input[0];
         labels.left.innerHTML = 'Hlasy: ' + input[1];
         labels.down.innerHTML = 'Hlasy: ' + input[2];
         labels.right.innerHTML = 'Hlasy: ' + input[3];
-        //console.log(JSON.parse(input));
     } else {
-        //console.log(input);
     }
 });
-
-/*
-button.addEventListener("click", () => {
-    const usbVendorId = '0x303A';
-    navigator.serial
-        .requestPort({ filters: [{ usbVendorId }] })
-        .then(async (port) => {
-            await port.open({ baudRate: 921600 });
-            while (port.readable) {
-                const reader = port.readable.getReader();
-                try {
-                    while (true) {
-                        const { value, done } = await reader.read();
-                        if (done) {
-                            console.log('Ended');
-                            // |reader| has been canceled.
-                            break;
-                        }
-
-                        let length = value.byteLength;
-                        let outputBytes = [];
-                        let previousNum = null;
-
-                        for (let i = 0; i < length; i++) {
-                            if (previousNum == 16) {
-                                if (value[i] == 10) {
-                                    break;
-                                }
-                                outputBytes.push(value[i]);
-                                //console.log('outputBytes: ' + outputBytes);
-                            } else {
-                                previousNum = value[i];
-                            }
-                        }
-
-                        let input = String.fromCharCode(...outputBytes);
-                        console.log(input);
-                        if (input == 'up' || input == 'left' || input == 'down' || input == 'right') {
-                            console.log(input);
-                            myMaze.move(input);
-                            update_maze(myMaze);
-                        } else if (input != 'undefined' || input != 'null' || input != '' || input != null || input != undefined || input != "") {
-                            input = JSON.parse(input);
-                            //console.log(input);
-                            labels.up.innerHTML = 'Hlasy: ' + input[0];
-                            labels.left.innerHTML = 'Hlasy: ' + input[1];
-                            labels.down.innerHTML = 'Hlasy: ' + input[2];
-                            labels.right.innerHTML = 'Hlasy: ' + input[3];
-                            //console.log(JSON.parse(input));
-                        } else {
-                            //console.log(input);
-                        }
-                        let TEST = '';
-                        TEST += '12';
-                        // Do something with |value|...
-                    }
-                } catch (error) {
-                    // Handle |error|...
-                } finally {
-                    reader.releaseLock();
-                }
-            }
-
-        })
-        .catch((e) => {
-            // The user didn't select a port.
-        });
-});
-*/
