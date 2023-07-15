@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Multiplayer maze</title>
+    <style>
+        body {
+            background-color: #7f7f7f;
+            color: #000000;
+            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+        }
+
+        table.main {
+            width: 100%;
+            height: 100%;
+        }
+
+        table.main td {
+            border: 1px solid #000000;
+        }
+
+        #arrowsdisplay {
+            height: 192px;
+            width: 192px;
+            position: absolute;
+            left: 1050px;
+            top: 35%;
+            scale: 2;
+        }
+
+        #vote-game {
+            display: none;
+        }
+
+        #singleplayer {
+            display: none;
+        }
+
+        #single {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            scale: 5;
+        }
+        #single-game{
+            display: none;
+        }
+
+        #vote {
+            position: absolute;
+            top: 50%;
+            right: 30%;
+            scale: 5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="selection">
+        <button id="single">Singleplayer</button>
+        <button id="vote">Voting</button>
+    </div>
+    
+
+        <div id="singleplayer">
+            <div id="size-selection">
+                <label for="size-x">Sirka</label>
+                <input id="size-x">
+                <label for="size-y">Vyska</label>
+                <input id="size-y">
+                <button id="submit-selection">Hrat</button>
+            </div>
+            <div id="single-game">
+                <!--<button id="test-button-singleplayer">Click</button>-->
+                <table class="main">
+                    <tr>
+                        <td id="mazedisplay-single"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    <div id="vote-game">
+        <button id="test-button">Click</button>
+        <div id="arrowsdisplay">
+            <label id="up_arrow_votes" style="
+            position: absolute;
+            top: -30px;
+            left: 33%;
+            z-index: 100;
+        ">Hlasy: </label>
+            <label id="left_arrow_votes" style="
+        position: absolute;
+        top: 44%;
+        left: -70px;
+        ">Hlasy: </label>
+            <label id="down_arrow_votes" style="
+        position: absolute;
+        top: 100%;
+        left: 40%;
+        ">Hlasy: </label>
+            <label id="right_arrow_votes" style="
+        position: absolute;
+        top: 44%;
+        left: 105%;
+        width: 80px;
+        ">Hlasy: </label>
+        </div>
+        <table class="main">
+            <tr>
+                <td id="mazedisplay"></td>
+            </tr>
+        </table>
+    </div>
+    
+    <script src="./webSerial.js"></script>
+    <script src="./main.js"></script>
+</body>
+
+</html>
