@@ -5,6 +5,8 @@ const LED_GREEN = 17;
 const LED_YELLOW = 15;
 const LED_RED = 45;
 const LED_BLUE = 46;
+const TIME_TO_SEND_MOVE = 2000;
+const TIME_TO_UPDATE_VOTES = 100;
 const radioGroup = 9;
 radio.begin(radioGroup);
 gpio.pinMode(LED_GREEN, gpio.PinMode.OUTPUT);
@@ -12,28 +14,9 @@ gpio.pinMode(LED_YELLOW, gpio.PinMode.OUTPUT);
 gpio.pinMode(LED_RED, gpio.PinMode.OUTPUT);
 gpio.pinMode(LED_BLUE, gpio.PinMode.OUTPUT);
 let possibleVotes = ['up', 'left', 'down', 'right'];
-//let selectionColors = { 'up': 0, 'left': 1, 'down': 2, 'right': 3 };
 let selectionColors = { 0: 'up', 1: 'left', 2: 'down', 3: 'right' };
 //'playerAddress' : 'vote'
 let playerVotes = {};
-/*
-radio.on('string', (str, info) => {
-    if (possibleVotes.includes(str)) {
-        console.log(JSON.stringify(playerVotes));
-        let playerAddress = info.address;
-        let vote = str;
-        
-        if (playerVotes[playerAddress] != vote) {
-            playerVotes[playerAddress] = vote;
-            radio.sendKeyValue(playerAddress, selectionColors[vote]);
-        } else {
-            
-        }
-    } else {
-        
-    }
-});
-*/
 async function blinkLed(pin) {
     gpio.write(pin, 1);
     await sleep(100);
@@ -41,7 +24,6 @@ async function blinkLed(pin) {
 }
 radio.on('keyvalue', (key, value, info) => {
     if (possibleVotes.includes(selectionColors[value])) {
-        //console.log(JSON.stringify(playerVotes));
         let vote = selectionColors[value];
         switch (vote) {
             case 'up':
@@ -64,7 +46,6 @@ radio.on('keyvalue', (key, value, info) => {
         }
         else {
         }
-        //console.log(JSON.stringify(playerVotes));
     }
     else {
     }
@@ -92,16 +73,8 @@ function countVotes(votes) {
         ;
     }
     let biggestKey = 'no vote';
-    //console.log([upVotes, leftVotes, downVotes, rightVotes]);
     if (upVotes > 0 || leftVotes > 0 || downVotes > 0 || rightVotes > 0) {
-        //console.log('votes greater than 0');
-        //if(hasDuplicates[upVotes, leftVotes, downVotes, rightVotes]){
-        //    return null;
-        //}else{
-        //    biggestKey = getBiggestKey({ 'up': upVotes, 'left': leftVotes, 'down': downVotes, 'right': rightVotes });
-        //}
         biggestKey = getBiggestKey({ 'up': upVotes, 'left': leftVotes, 'down': downVotes, 'right': rightVotes });
-        //console.log(hasDuplicates([upVotes, leftVotes, downVotes, rightVotes]));
     }
     return [biggestKey, { 0: upVotes, 1: leftVotes, 2: downVotes, 3: rightVotes }];
 }
@@ -113,11 +86,9 @@ setInterval(() => {
     let winner = countVotes(playerVotes)[0];
     if (winner) {
         serial.sendStringToSerial(winner);
-        //console.log(winner);
     }
-}, 2000);
+}, TIME_TO_SEND_MOVE);
 setInterval(() => {
     let votes = countVotes(playerVotes)[1];
     serial.sendStringToSerial(JSON.stringify(votes));
-    //console.log(JSON.stringify(votes));
-}, 100);
+}, TIME_TO_UPDATE_VOTES);

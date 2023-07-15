@@ -65,7 +65,7 @@ function countVotes(votes) {
     var upVotes = 0;
     var leftVotes = 0;
     var downVotes = 0;
-    var rightVotes = 1;
+    var rightVotes = 0;
 
     for (let vote in votes) {
         switch (votes[vote]) {
