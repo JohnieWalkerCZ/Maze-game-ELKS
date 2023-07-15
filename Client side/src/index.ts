@@ -59,12 +59,10 @@ gpio.on("falling", BUTTON_NEXT, () => {
 function submitSelection(index){
     console.log(index);
     console.log(selectionColors[index]);
-    //radio.sendString(selectionColors[index]);
     radio.sendKeyValue(radio.address(), index);
 }
 
 radio.on('keyvalue', (key, value) => {
-    //pokud value neni tvoje hlas, tak odesli nahradni
     if(radio.address() == key){
         console.log('Jsem to ja');
         if(value != index){
@@ -77,6 +75,7 @@ radio.on('keyvalue', (key, value) => {
     console.log(radio.address());
     console.log(key + ' sent ' + value);
 });
+
 //Joystick
 import * as adc from "adc";
 
@@ -125,5 +124,4 @@ setInterval(() => {
 
 gpio.on("rising", JOYSTICK_SUBMIT_PIN, () => {
     submitSelection(index);
-    //console.log("submitted");
 });
